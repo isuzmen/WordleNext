@@ -1,0 +1,17 @@
+.cell{
+    border:1px solid black;
+    width:45px;
+    height:45px;
+    margin:2px;
+    font-size:25px;
+    font-weight:bold;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cellContainer{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
