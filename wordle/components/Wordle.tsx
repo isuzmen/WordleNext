@@ -1,10 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import styles from './Wordle.module.css'
 
-const Wordle = () => {
+type WordleType = {
+  wordle:string
+}
+
+const Wordle = ({wordle}:WordleType) => {
 
     const [guess,setGuess] = useState<Array<string>>([])
     const [guessAll, setGuessAll] = useState<Array<Array<string>>>([])
+
+    if(wordle.length !== 5){
+      throw new Error("The word must be five letters long.")
+    }
 
     useEffect(() => {
         const handleKeyFunc = (e:KeyboardEvent) => {
@@ -28,14 +36,16 @@ const Wordle = () => {
             window.removeEventListener('keydown',handleKeyFunc)
         }
     },[guess])
-    console.log(guess)
     console.log("guessAll: ", guessAll)
+
+    const isCorrect = guessAll.length > 0 && guessAll[guessAll.length -1].join('') === wordle
+    const isFailure = !isCorrect && guessAll.length === 6
   return (
     <div>
       <PreviousGuess guessAll={guessAll}/>
-      <CurrentGuess guess = {guess}/>
+      {!isCorrect && !isFailure && <CurrentGuess guess = {guess}/>}
       {
-        Array.from({length:6 - guessAll.length - 1}).map((_,i) => {
+        Array.from({length: 6 - guessAll.length - (isCorrect ? 0 : 1)}).map((_,i) => {
           return <NullGuess key={i}/>
         })
       }

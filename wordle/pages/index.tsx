@@ -18,7 +18,7 @@ export default function Home() {
   
   return (
     <div className={styles.container}>
-      <Wordle/>
+      <Wordle wordle="hello"/>
     </div>  
   );
 }
