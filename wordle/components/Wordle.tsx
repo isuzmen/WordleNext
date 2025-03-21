@@ -31,12 +31,76 @@ const Wordle = () => {
     console.log(guess)
     console.log("guessAll: ", guessAll)
   return (
-    <div className={styles.cellContainer}>
+    <div>
+      <PreviousGuess guessAll={guessAll}/>
+      <CurrentGuess guess = {guess}/>
       {
-        Array.from({length:5}).map((_,i) => {
-            return <div className={styles.cell} key={i}>{guess[i]}</div>
+        Array.from({length:6 - guessAll.length - 1}).map((_,i) => {
+          return <NullGuess key={i}/>
         })
       }
+    </div>
+  )
+}
+
+type previousGuessSub = {
+  all:Array<string>
+}
+
+const PreviousGuessSub = ({all}:previousGuessSub) => {
+  return (
+    <div className={styles.cellContainer}>
+        {
+          all.map((a,i) => {
+              return <div className={styles.cell} key={i}>{a}</div>
+          })
+        }
+    </div>
+  )
+}
+
+type previousGuess = {
+  guessAll:Array<Array<string>>
+}
+
+const PreviousGuess = ({guessAll}:previousGuess) => {
+  return (
+    <>
+        {
+          guessAll.map((all,i) => {
+              return <div key={i}>
+                <PreviousGuessSub all = {all}/>
+              </div>
+          })
+        }
+    </>
+  )
+}
+
+type currentGuess = {
+  guess:Array<string>
+}
+
+const CurrentGuess = ({guess}:currentGuess) => {
+  return (
+    <div className={styles.cellContainer}>
+        {
+          Array.from({length:5}).map((_,i) => {
+              return <div className={styles.cell} key={i}>{guess[i]}</div>
+          })
+        }
+    </div>
+  )
+}
+
+const NullGuess = () => {
+  return (
+    <div className={styles.cellContainer}>
+        {
+          Array.from({length:5}).map((_,i) => {
+              return <div className={styles.cell} key={i}></div>
+          })
+        }
     </div>
   )
 }
