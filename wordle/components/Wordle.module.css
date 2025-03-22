@@ -1,5 +1,22 @@
+.container{
+    margin-top:50px;
+}
+
+@keyframes flip {
+    0% {
+      transform: rotateX(0);
+      background-color: #ffffff;
+    }
+    50% {
+      transform: rotateX(90deg);
+      background-color: #ccc;
+    }
+    100% {
+      transform: rotateX(0);
+    }
+  }
+
 .cell{
-    border:1px solid rgb(16, 162, 0);;
     width:45px;
     height:45px;
     margin:2px;
@@ -8,6 +25,10 @@
     display:flex;
     align-items: center;
     justify-content: center;
+    background-color: rgb(189, 255, 141);
+    color:black;
+    transition: background-color 0.3s ease-in-out;
+    border-radius:8px;
 }
 
 .cellContainer{
@@ -18,10 +39,12 @@
 
 .green{
     background-color:green;
+    animation: flip 0.5s ease-in-out;
 }
 
 .yellow{
-    background-color: rgb(133, 219, 3);
+    background-color: yellow;
+    animation: flip 0.5s ease-in-out;
 }
 
 .row{
@@ -34,14 +57,53 @@
     display:flex;
     align-items: center;
     justify-content: center;
-    width:40px;
-    height:40px;
-    border:1px solid rgb(16, 162, 0);;
-    font-size:20px;
+    margin:2px;
+    color:black;
+    width:45px;
+    height:45px;
+    background-color: rgb(189, 255, 141);
+    font-size:22px;
     cursor:pointer;
+    border-radius:8px;
+    transition: transform 0.1s ease-in-out;
 }
 
-.col:hover{
-    background-color:rgb(133, 219, 3);
-    transition:all ease-in-out .2s;
+.col:active {
+    transform: scale(0.9);
 }
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
+}
+
+.shake {
+    animation: shake 0.3s ease-in-out;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  .bounce {
+      animation: bounce 0.5s ease-in-out;
+  }
+
+  .key-press {
+    background-color: rgb(133, 219, 3);
+    transition: background-color 0.2s ease-in-out;
+}
+
+@keyframes keyPress {
+    0% { background-color: rgb(148, 247, 0); }
+    50% { background-color: rgb(114, 218, 10); }
+    100% { background-color: rgb(97, 159, 4); }
+  }
+  
+  .key-pressed {
+      animation: keyPress 0.5s ease-in-out;
+  }

@@ -9,11 +9,11 @@ const Wordle = ({wordle}:WordleType) => {
 
     const [guess,setGuess] = useState<Array<string>>([])
     const [guessAll, setGuessAll] = useState<Array<Array<string>>>([])
-    const [keyboard,setKeyboard] = useState([
+    const keyboard = [
       ["e","r","t","y","u","ı","o","p","ğ","ü"],
       ["a","s","d","f","g","h","j","k","l","ş","i"],
       ["en","z","c","v","b","n","m","ö","ç","bs"]
-    ])
+    ]
 
     if(wordle.length !== 5){
       throw new Error("The word must be five letters long.")
@@ -36,8 +36,22 @@ const Wordle = ({wordle}:WordleType) => {
             const backspace = e.key === "Backspace";
             const enter = e.key === "Enter";
 
+            keyboard.forEach((row, i) => {
+              row.forEach((col, j) => {
+                if (col === e.key || (backspace && col === "bs") || (enter && col === "en")) {
+                  const keyElement = document.getElementById(`key-${i}-${j}`);
+                  if (keyElement) {
+                    keyElement.classList.add(styles["key-pressed"]);
+                    setTimeout(() => {
+                      if (keyElement) keyElement.classList.remove(styles["key-pressed"]);
+                    }, 300);
+                  }
+                }
+              });
+            });
+
             if(backspace){
-                setGuess(guess.filter(gss => gss !== guess[guess.length -1] ))
+                setGuess(prev => prev.slice(0, -1));
             }else if(letterCtrl && guess.length < 5){
                 setGuess(prev => [...prev,e.key])
             }else if(enter && guess.length === 5){
@@ -59,8 +73,14 @@ const Wordle = ({wordle}:WordleType) => {
       const backspace = keyboard[i][j] === "bs";
       const enter = keyboard[i][j] === "en";
 
+    const keyElement = document.getElementById(`key-${i}-${j}`);
+      if (keyElement) {
+      keyElement.classList.add(styles["key-pressed"]);
+      setTimeout(() => keyElement.classList.remove(styles["key-pressed"]), 300);
+    }
+
       if(backspace){
-        setGuess(guess.filter(gss => gss !== guess[guess.length -1] ))
+        setGuess(prev => prev.slice(0, -1));
       }else if(letterCtrl && guess.length < 5){
         setGuess(prev => [...prev,keyboard[i][j]])
       }else if(enter && guess.length === 5){
@@ -69,10 +89,11 @@ const Wordle = ({wordle}:WordleType) => {
       }
     }
 
-    const isCorrect = guessAll.length > 0 && guessAll[guessAll.length -1].join('') === wordle
+    const lastGuess = guessAll.at(-1)?.join('') ?? '';
+    const isCorrect = lastGuess === wordle;
     const isFailure = !isCorrect && guessAll.length === 6
   return (
-    <div>
+    <div className={styles.container}>
       <PreviousGuess guessAll={guessAll} wordle={wordle} charMap={charMap}/>
       {!isCorrect && !isFailure && <CurrentGuess guess = {guess}/>}
       {
@@ -80,13 +101,19 @@ const Wordle = ({wordle}:WordleType) => {
           return <NullGuess key={i}/>
         })
       }
-      <div style={{marginTop:"25px"}}>
+      <div style={{marginTop:"45px"}}>
         {
           keyboard.map((row,i) => {
-            return <div className={styles.row} key={i}>
+            return <div  className={styles.row} key={i}>
               {row.map((col,j) => {
-                return <div onClick={()=> addKeyboard(i,j)} className={styles.col} key={j}>{col}
-                  </div>
+                return <div
+                  id={`key-${i}-${j}`}
+                  onClick={() => addKeyboard(i, j)}
+                  className={styles.col}
+                  key={j}
+                  >
+                  {col}
+                </div>
               })}
             </div>
           })
@@ -103,9 +130,32 @@ type previousGuessSub = {
 }
 
 const PreviousGuessSub = ({all,wordle,charMap}:previousGuessSub) => {
+  const [revealed, setRevealed] = useState(false);
+  const [shake, setShake] = useState(false);
+  const [bounce, setBounce] = useState(false);
+
   const cMap = {...charMap}
+
+  useEffect(() => {
+    setTimeout(() => {
+      setRevealed(true);
+    }, 300); 
+  }, []);
+
+  useEffect(() => {
+    if (revealed) {
+      if (all.join('') === wordle) {
+        setBounce(true);
+        setTimeout(() => setBounce(false), 500); 
+      } else {
+        setShake(true);
+        setTimeout(() => setShake(false), 300); 
+      }
+    }
+  }, [revealed, all, wordle]);
+  
   return (
-    <div className={styles.cellContainer}>
+    <div className={`${styles.cellContainer} ${shake ? styles.shake : ''} ${bounce ? styles.bounce : ''}`}>
         {
           all.map((a,i) => {
             const wordleLetter = wordle[i]
@@ -115,7 +165,7 @@ const PreviousGuessSub = ({all,wordle,charMap}:previousGuessSub) => {
               isPr = true
               cMap[a] -= 1
             }
-            return <div className={`${styles.cell} ${greenCtrl ? styles.green : ''} ${isPr ? styles.yellow : ''}`}  key={i}>{a}</div>
+            return <div className={`${styles.cell} ${revealed ? (greenCtrl ? styles.green : isPr ? styles.yellow : '') : ''}`}  key={i}>{a}</div>
           })
         }
     </div>
