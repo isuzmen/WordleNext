@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import styles from './Wordle.module.css'
 
 type WordleType = {
@@ -13,6 +13,17 @@ const Wordle = ({wordle}:WordleType) => {
     if(wordle.length !== 5){
       throw new Error("The word must be five letters long.")
     }
+
+    const charMap = useMemo(() => {
+      return wordle.split('').reduce<Record<string,number>>((acc,char)=>{
+        if(!acc.hasOwnProperty(char)){
+          acc[char] = 1;
+        }else{
+          acc[char] += 1;
+        }
+        return acc
+      },{})
+    },[wordle])
 
     useEffect(() => {
         const handleKeyFunc = (e:KeyboardEvent) => {
@@ -42,7 +53,7 @@ const Wordle = ({wordle}:WordleType) => {
     const isFailure = !isCorrect && guessAll.length === 6
   return (
     <div>
-      <PreviousGuess guessAll={guessAll}/>
+      <PreviousGuess guessAll={guessAll} wordle={wordle} charMap={charMap}/>
       {!isCorrect && !isFailure && <CurrentGuess guess = {guess}/>}
       {
         Array.from({length: 6 - guessAll.length - (isCorrect ? 0 : 1)}).map((_,i) => {
@@ -55,14 +66,24 @@ const Wordle = ({wordle}:WordleType) => {
 
 type previousGuessSub = {
   all:Array<string>
+  wordle: string
+  charMap: Record<string,number>
 }
 
-const PreviousGuessSub = ({all}:previousGuessSub) => {
+const PreviousGuessSub = ({all,wordle,charMap}:previousGuessSub) => {
+  const cMap = {...charMap}
   return (
     <div className={styles.cellContainer}>
         {
           all.map((a,i) => {
-              return <div className={styles.cell} key={i}>{a}</div>
+            const wordleLetter = wordle[i]
+            let greenCtrl = wordleLetter === a
+            let isPr = false;
+            if(!greenCtrl && cMap[a]){
+              isPr = true
+              cMap[a] -= 1
+            }
+            return <div className={`${styles.cell} ${greenCtrl ? styles.green : ''} ${isPr ? styles.yellow : ''}`}  key={i}>{a}</div>
           })
         }
     </div>
@@ -71,15 +92,17 @@ const PreviousGuessSub = ({all}:previousGuessSub) => {
 
 type previousGuess = {
   guessAll:Array<Array<string>>
+  wordle: string
+  charMap:Record<string,number>
 }
 
-const PreviousGuess = ({guessAll}:previousGuess) => {
+const PreviousGuess = ({guessAll,wordle,charMap}:previousGuess) => {
   return (
     <>
         {
           guessAll.map((all,i) => {
               return <div key={i}>
-                <PreviousGuessSub all = {all}/>
+                <PreviousGuessSub all = {all} wordle = {wordle} charMap={charMap}/>
               </div>
           })
         }
