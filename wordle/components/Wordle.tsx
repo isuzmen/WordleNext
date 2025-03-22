@@ -9,6 +9,11 @@ const Wordle = ({wordle}:WordleType) => {
 
     const [guess,setGuess] = useState<Array<string>>([])
     const [guessAll, setGuessAll] = useState<Array<Array<string>>>([])
+    const [keyboard,setKeyboard] = useState([
+      ["e","r","t","y","u","ı","o","p","ğ","ü"],
+      ["a","s","d","f","g","h","j","k","l","ş","i"],
+      ["en","z","c","v","b","n","m","ö","ç","bs"]
+    ])
 
     if(wordle.length !== 5){
       throw new Error("The word must be five letters long.")
@@ -49,6 +54,21 @@ const Wordle = ({wordle}:WordleType) => {
     },[guess])
     console.log("guessAll: ", guessAll)
 
+    const addKeyboard = (i:number,j:number) => {
+      const letterCtrl = /^[a-z]$/.test(keyboard[i][j]);
+      const backspace = keyboard[i][j] === "bs";
+      const enter = keyboard[i][j] === "en";
+
+      if(backspace){
+        setGuess(guess.filter(gss => gss !== guess[guess.length -1] ))
+      }else if(letterCtrl && guess.length < 5){
+        setGuess(prev => [...prev,keyboard[i][j]])
+      }else if(enter && guess.length === 5){
+        setGuessAll(prev => [...prev,guess])
+        setGuess([])
+      }
+    }
+
     const isCorrect = guessAll.length > 0 && guessAll[guessAll.length -1].join('') === wordle
     const isFailure = !isCorrect && guessAll.length === 6
   return (
@@ -60,6 +80,18 @@ const Wordle = ({wordle}:WordleType) => {
           return <NullGuess key={i}/>
         })
       }
+      <div style={{marginTop:"25px"}}>
+        {
+          keyboard.map((row,i) => {
+            return <div className={styles.row} key={i}>
+              {row.map((col,j) => {
+                return <div onClick={()=> addKeyboard(i,j)} className={styles.col} key={j}>{col}
+                  </div>
+              })}
+            </div>
+          })
+        }
+      </div>
     </div>
   )
 }

@@ -1,5 +1,5 @@
 .cell{
-    border:1px solid yellowgreen;
+    border:1px solid rgb(16, 162, 0);;
     width:45px;
     height:45px;
     margin:2px;
@@ -17,9 +17,31 @@
 }
 
 .green{
-    background-color:limegreen;
+    background-color:green;
 }
 
 .yellow{
-    background-color: yellowgreen;
+    background-color: rgb(133, 219, 3);
+}
+
+.row{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.col{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    width:40px;
+    height:40px;
+    border:1px solid rgb(16, 162, 0);;
+    font-size:20px;
+    cursor:pointer;
+}
+
+.col:hover{
+    background-color:rgb(133, 219, 3);
+    transition:all ease-in-out .2s;
 }
